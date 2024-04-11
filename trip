@@ -1,0 +1,135 @@
+from prettytable import PrettyTable
+
+def generate_triples(expression):
+    operators = ['*', '+', '-', '/']
+    asg = expression[0]
+    stack = list(expression[2:])
+    int_code = {}
+    count = 0
+
+    for i in range(len(expression)):
+        if expression[i] == ')':
+            s = ''
+            while stack[-1] != '(':
+                s = stack.pop() + s
+            stack.pop()  # To Remove '('
+            count += 1
+            temp_var = '(' + str(count) + ')'
+            int_code[temp_var] = s
+            stack.append(temp_var)
+        else:
+            stack.append(expression[i])
+
+    int_code[asg] = '(' + str(count) + ')'
+
+    op = []
+    arg1 = []
+    arg2 = []
+
+    for k, v in int_code.items():
+        if v[0] == '-':
+            op.append(v[0])
+            arg1.append(v[1:])
+            arg2.append('-')
+        else:
+            flag = 0
+            for i in operators:
+                if i in v:
+                    flag = 1
+                    ind = v.index(i)
+                    op.append(v[ind])
+                    arg1.append(v[0:ind])
+                    arg2.append(v[ind + 1:])
+                    break
+            if flag == 0:
+                op.append('=')
+                arg1.append(k)
+                arg2.append(v)
+
+    table = PrettyTable(['OPERATOR', 'ARG1', 'ARG2'])
+    for i in range(len(op)):
+        table.add_row([''.join(op[i]), ''.join(arg1[i]), ''.join(arg2[i])])
+
+    print(table)
+
+def generate_quadruples(expression):
+    operators = ['*', '+', '-', '/']
+    asg = expression[0]
+    stack = list(expression[2:])
+    int_code = {}
+    count = 0
+
+    for i in range(len(expression)):
+        if expression[i] == ')':
+            s = ''
+            while stack[-1] != '(':
+                s = stack.pop() + s
+            stack.pop()  # Remove the '('
+            count += 1
+            temp_var = 'T' + str(count)
+            int_code[temp_var] = s
+            stack.append(temp_var)
+        else:
+            stack.append(expression[i])
+
+    int_code[asg] = 'T' + str(count)
+
+    op = []
+    arg1 = []
+    arg2 = []
+    res = []
+
+    for k, v in int_code.items():
+        if v[0] == '-':
+            op.append(v[0])
+            arg1.append(v[1:])
+            arg2.append('-')
+            res.append(k)
+        else:
+            flag = 0
+            for i in operators:
+                if i in v:
+                    flag = 1
+                    ind = v.index(i)
+                    op.append(v[ind])
+                    arg1.append(v[0:ind])
+                    arg2.append(v[ind + 1:])
+                    res.append(k)
+                    break
+            if flag == 0:
+                op.append('=')
+                arg1.append(v)
+                arg2.append('-')
+                res.append(k)
+
+    table = PrettyTable(['OPERATOR', 'ARG1', 'ARG2', 'RESULT'])
+    for i in range(len(op)):
+        table.add_row([''.join(op[i]), ''.join(arg1[i]), ''.join(arg2[i]), ''.join(res[i])])
+
+    print(table)
+
+def main():
+    while True:
+        print("\n1. Generate Triples")
+        print("2. Generate Quadruples")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            expression = input("Enter arithmetic expression with appropriate brackets: ")
+            print("\nARITHMETIC EXPRESSION: ", expression)
+            print("\nTRIPLES\n")
+            generate_triples(expression)
+        elif choice == '2':
+            expression = input("Enter arithmetic expression with appropriate brackets: ")
+            print("\nARITHMETIC EXPRESSION: ", expression)
+            print("\nQUADRUPLES\n")
+            generate_quadruples(expression)
+        elif choice == '3':
+            print("Exiting program...")
+            break
+        else:
+            print("Invalid choice. Please enter a valid option.")
+
+if __name__ == "__main__":
+    main()
